@@ -25,7 +25,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public DataSource hikariDataSource() {
-        HikariConfig config = new HikariConfig();
+        var config = new HikariConfig();
 
         config.setJdbcUrl(env.getRequiredProperty("db.url"));
         config.setUsername(env.getRequiredProperty("db.username"));
@@ -42,7 +42,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public Configuration freemarkerConfig() {
-        Configuration config = new Configuration(Configuration.VERSION_2_3_27);
+        var config = new Configuration(Configuration.VERSION_2_3_27);
 
         config.setClassForTemplateLoading(getClass(), "/templates/email");
         config.setDefaultEncoding("UTF-8");
@@ -52,12 +52,12 @@ public class ApplicationConfiguration {
 
     @Bean
     public JavaMailSender mailSender() {
-        Properties mailProperties = new Properties();
+        var mailProperties = new Properties();
 
         mailProperties.setProperty("mail.smtp.auth", env.getRequiredProperty("mail.smtp.auth"));
         mailProperties.setProperty("mail.smtp.starttls.enable", env.getRequiredProperty("mail.smtp.starttls.enable"));
 
-        JavaMailSenderImpl sender = new JavaMailSenderImpl();
+        var sender = new JavaMailSenderImpl();
 
         sender.setJavaMailProperties(mailProperties);
         sender.setHost(env.getRequiredProperty("mail.host"));

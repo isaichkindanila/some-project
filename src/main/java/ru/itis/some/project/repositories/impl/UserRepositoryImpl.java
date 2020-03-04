@@ -5,7 +5,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.itis.some.project.models.User;
 import ru.itis.some.project.repositories.UserRepository;
@@ -25,9 +24,9 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String SQL_FIND_ALL =
             "select * from public.user";
     private static final String SQL_CREATE =
-            "insert into public.user(email, passHash, isActivated) values (?, ?, ?)";
+            "insert into public.user(email, pass_hash, activated) values (?, ?, ?)";
     private static final String SQL_UPDATE =
-            "update public.user set email = ?, passHash = ?, isActivated = ? where id = ?";
+            "update public.user set email = ?, pass_hash = ?, activated = ? where id = ?";
     private static final String SQL_DELETE =
             "delete from public.user where id = ?";
 
@@ -35,8 +34,8 @@ public class UserRepositoryImpl implements UserRepository {
             User.builder()
                     .id(row.getLong("id"))
                     .email(row.getString("email"))
-                    .passHash(row.getString("passHash"))
-                    .isActivated(row.getBoolean("isActivated"))
+                    .passHash(row.getString("pass_hash"))
+                    .isActivated(row.getBoolean("activated"))
                     .build();
 
     private final JdbcTemplate template;
@@ -44,7 +43,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> find(Long id) {
         try {
-            User user = template.queryForObject(SQL_FIND_ID, mapper, id);
+            var user = template.queryForObject(SQL_FIND_ID, mapper, id);
             return Optional.ofNullable(user);
         } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
@@ -54,7 +53,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findByEmail(String email) {
         try {
-            User user = template.queryForObject(SQL_FIND_EMAIL, mapper, email);
+            var user = template.queryForObject(SQL_FIND_EMAIL, mapper, email);
             return Optional.ofNullable(user);
         } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
@@ -68,7 +67,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void create(User model) {
-        KeyHolder holder = new GeneratedKeyHolder();
+        var holder = new GeneratedKeyHolder();
 
         template.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(SQL_CREATE, new String[]{"id"});

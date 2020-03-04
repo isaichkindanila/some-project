@@ -14,7 +14,6 @@ import ru.itis.some.project.services.SignUpService;
 import ru.itis.some.project.util.auth.PasswordEncoder;
 import ru.itis.some.project.util.exceptions.ServiceException;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,11 +32,11 @@ public class SignUpServiceImpl implements SignUpService {
             throw new ServiceException("email is already taken");
         }
 
-        String token = UUID.randomUUID().toString();
-        Map<String, Object> modelMap = new HashMap<>();
-
-        modelMap.put("server", environment.getRequiredProperty("server.url"));
-        modelMap.put("token", token);
+        var token = UUID.randomUUID().toString();
+        var modelMap = Map.of(
+                "server", environment.getRequiredProperty("server.url"),
+                "token", token
+        );
 
         try {
             emailService.sendEmail(dto.getEmail(), "confirm_sign_up", modelMap);
@@ -45,7 +44,7 @@ public class SignUpServiceImpl implements SignUpService {
             throw new ServiceException("cannot confirm email");
         }
 
-        User user = User.builder()
+        var user = User.builder()
                 .email(dto.getEmail())
                 .passHash(passwordEncoder.hash(dto.getPassword()))
                 .isActivated(false)
@@ -53,9 +52,10 @@ public class SignUpServiceImpl implements SignUpService {
 
         userRepository.create(user);
 
-        SignUpToken signUpToken = SignUpToken.builder()
+        var signUpToken = SignUpToken.builder()
                 .token(token)
                 .user(user)
+                .isUsed(false)
                 .build();
 
         tokenRepository.create(signUpToken);

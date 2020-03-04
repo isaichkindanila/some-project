@@ -10,4 +10,5 @@ import lombok.Data;
 public class SignUpToken {
     private String token;
     private User user;
+    private boolean isUsed;
 }

@@ -23,16 +23,17 @@ public class ServletHelper {
                          HttpServletResponse response,
                          String view,
                          Map<String, ?> models) throws ServletException, IOException {
-        for (Map.Entry<String, ?> model : models.entrySet()) {
+
+        for (var model : models.entrySet()) {
             request.setAttribute(model.getKey(), model.getValue());
         }
 
-        String url = "/" + view + ".ftl";
+        var url = "/" + view + ".ftl";
         request.getRequestDispatcher(url).forward(request, response);
     }
 
     public String getParameter(HttpServletRequest request, String name) {
-        String param = request.getParameter(name);
+        var param = request.getParameter(name);
 
         if (param == null) {
             throw new RequestException("missing required parameter: '" + name + "'");
