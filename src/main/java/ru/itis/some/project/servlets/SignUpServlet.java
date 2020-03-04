@@ -43,7 +43,9 @@ public class SignUpServlet extends BetterHttpServlet {
 
         try {
             signUpService.signUp(dto);
-            resp.sendRedirect("/");
+
+            var modelMap = Map.of("email", dto.getEmail());
+            helper.sendView(req, resp, "sign_up_confirm", modelMap);
         } catch (ServiceException e) {
             resp.sendRedirect("/signUp?err=" + e.getMessage());
         }
