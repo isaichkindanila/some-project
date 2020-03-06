@@ -5,19 +5,20 @@ import com.zaxxer.hikari.HikariDataSource;
 import freemarker.template.Configuration;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import javax.sql.DataSource;
 import java.util.Properties;
 
 @org.springframework.context.annotation.Configuration
 @AllArgsConstructor
-@ComponentScan("ru.itis.some.project")
 @PropertySource("classpath:application.properties")
 public class ApplicationConfiguration {
 
@@ -41,7 +42,7 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public Configuration freemarkerConfig() {
+    public Configuration freemarkerEmailConfig() {
         var config = new Configuration(Configuration.VERSION_2_3_27);
 
         config.setClassForTemplateLoading(getClass(), "/templates/email");
@@ -67,5 +68,19 @@ public class ApplicationConfiguration {
 
 
         return sender;
+    }
+
+    @Bean
+    public ViewResolver freemarkerViewResolver() {
+        return new FreeMarkerViewResolver("/view/", ".ftl");
+    }
+
+    @Bean
+    public FreeMarkerConfigurer freemarkerViewConfigurer() {
+        var configurer = new FreeMarkerConfigurer();
+
+        configurer.setTemplateLoaderPath("classpath:templates");
+
+        return configurer;
     }
 }

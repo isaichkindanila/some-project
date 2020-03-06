@@ -11,5 +11,5 @@
             <input id="submitButton" type="button" value="Sign up">
         </form>
     </@H.body>
-    <script src="/js/signUp.js"></script>
+    <script src="/static/js/signUp.js"></script>
 </@H.html>
