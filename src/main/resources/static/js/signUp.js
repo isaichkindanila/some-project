@@ -1,8 +1,8 @@
-let form = document.getElementById("signUpForm");
-let error = document.getElementById("error");
-let email = document.getElementById("email");
-let password = document.getElementById("password");
-let repeatPassword = document.getElementById("repeatPassword");
+let form = document.querySelector("#signUpForm");
+let error = document.querySelector("#error");
+let email = document.querySelector("#email");
+let password = document.querySelector("#p1");
+let repeatPassword = document.querySelector("#p2");
 
 function validateForm() {
     if (email.value === "") {

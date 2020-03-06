@@ -3,6 +3,7 @@ package ru.itis.some.project.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSendException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.itis.some.project.dto.SignUpDto;
 import ru.itis.some.project.models.SignUpToken;
@@ -12,7 +13,6 @@ import ru.itis.some.project.repositories.UserRepository;
 import ru.itis.some.project.services.EmailService;
 import ru.itis.some.project.services.SignUpService;
 import ru.itis.some.project.services.TemplateService;
-import ru.itis.some.project.util.auth.PasswordEncoder;
 import ru.itis.some.project.util.exceptions.ServiceException;
 
 import java.util.Map;
@@ -52,7 +52,7 @@ public class SignUpServiceImpl implements SignUpService {
 
         var user = User.builder()
                 .email(dto.getEmail())
-                .passHash(passwordEncoder.hash(dto.getPassword()))
+                .passHash(passwordEncoder.encode(dto.getPassword()))
                 .isActivated(false)
                 .build();
 
