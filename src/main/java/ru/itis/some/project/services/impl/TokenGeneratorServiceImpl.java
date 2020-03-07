@@ -10,7 +10,7 @@ import java.util.Base64;
 public class TokenGeneratorServiceImpl implements TokenGeneratorService {
 
     private final SecureRandom random = new SecureRandom();
-    private final Base64.Encoder encoder = Base64.getEncoder();
+    private final Base64.Encoder encoder = Base64.getUrlEncoder();
 
     @Override
     public String generateToken(int length) {

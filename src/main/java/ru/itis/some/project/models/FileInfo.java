@@ -7,8 +7,10 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class SignUpToken {
+public class FileInfo {
+    private Long id;
+    private Long length;
     private String token;
-    private User user;
-    private boolean isUsed;
+    private String mimeType;
+    private String originalName;
 }

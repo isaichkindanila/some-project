@@ -1,19 +1,44 @@
 package ru.itis.some.project.controllers;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ru.itis.some.project.services.FileService;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @AllArgsConstructor
 @RequestMapping("/files")
 public class FilesController {
+    private final FileService fileService;
 
     @GetMapping
-    @ResponseBody
     public String getUploadPage() {
-        return "it's working!";
+        return "files";
+    }
+
+    @PostMapping
+    public String uploadFile(@RequestParam MultipartFile file) {
+        fileService.save(file);
+        return "files";
+    }
+
+    @SneakyThrows
+    @GetMapping("/{fileName:.+}")
+    public void getFile(@PathVariable String fileName, HttpServletResponse response) {
+        var fileDto = fileService.load(fileName);
+
+        response.setContentLengthLong(fileDto.getLength());
+        response.setContentType(fileDto.getMimeType());
+
+        try(var in = fileDto.getUrl().openStream()) {
+            var out = response.getOutputStream();
+
+            in.transferTo(out);
+            out.flush();
+        }
     }
 }

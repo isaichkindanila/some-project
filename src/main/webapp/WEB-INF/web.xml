@@ -8,6 +8,11 @@
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
+        <multipart-config>
+            <!--  256 MB --><max-file-size>268435456</max-file-size>
+            <!-- 1024 MB --><max-request-size>1073741824</max-request-size>
+            <file-size-threshold>0</file-size-threshold>
+        </multipart-config>
     </servlet>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
