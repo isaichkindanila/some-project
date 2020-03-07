@@ -25,14 +25,14 @@ public class EmailServiceImpl implements EmailService {
     private int retries;
 
     @Override
-    public void sendEmail(String email, String html) {
+    public void sendEmail(String email, String subject, String html) {
         var message = mailSender.createMimeMessage();
 
         try {
             var helper = new MimeMessageHelper(message);
 
             helper.setTo(email);
-            helper.setSubject("Email verification");
+            helper.setSubject(subject);
             helper.setText(html, true);
         } catch (MessagingException e) {
             throw new IllegalStateException(e);

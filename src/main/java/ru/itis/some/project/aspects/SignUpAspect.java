@@ -15,6 +15,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class SignUpAspect {
+
     private final TemplateService templateService;
     private final EmailService emailService;
 
@@ -34,6 +35,6 @@ public class SignUpAspect {
 
         var message = templateService.process("confirm_sign_up", modelMap);
 
-        emailService.sendEmail(dto.getEmail(), message);
+        emailService.sendEmail(dto.getEmail(), "Email conformation", message);
     }
 }

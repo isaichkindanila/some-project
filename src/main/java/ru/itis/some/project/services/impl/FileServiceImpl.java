@@ -37,6 +37,7 @@ public class FileServiceImpl implements FileService {
         return FileDto.builder()
                 .url(file.toURI().toURL())
                 .length(info.getLength())
+                .token(info.getToken())
                 .mimeType(info.getMimeType())
                 .originalName(info.getOriginalName())
                 .build();

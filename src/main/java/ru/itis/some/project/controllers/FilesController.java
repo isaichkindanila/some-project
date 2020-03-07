@@ -2,9 +2,11 @@ package ru.itis.some.project.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import ru.itis.some.project.services.FileService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +24,10 @@ public class FilesController {
 
     @PostMapping
     public String uploadFile(@RequestParam MultipartFile file) {
+        if (file.getOriginalFilename() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "original file name must be provided");
+        }
+
         fileService.save(file);
         return "files";
     }
@@ -33,6 +39,7 @@ public class FilesController {
 
         response.setContentLengthLong(fileDto.getLength());
         response.setContentType(fileDto.getMimeType());
+        response.setHeader("Content-Disposition", "inline; filename=\"" + fileDto.getOriginalName() + "\"");
 
         try(var in = fileDto.getUrl().openStream()) {
             var out = response.getOutputStream();

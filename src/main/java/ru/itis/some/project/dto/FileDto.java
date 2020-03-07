@@ -12,6 +12,7 @@ import java.net.URL;
 public class FileDto {
     private final URL url;
     private final Long length;
+    private final String token;
     private final String mimeType;
     private final String originalName;
 }
