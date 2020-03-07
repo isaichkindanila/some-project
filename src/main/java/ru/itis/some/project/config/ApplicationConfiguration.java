@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import freemarker.template.Configuration;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,13 +17,21 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import javax.sql.DataSource;
 import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @org.springframework.context.annotation.Configuration
 @AllArgsConstructor
+@EnableAspectJAutoProxy
 @PropertySource("classpath:application.properties")
 public class ApplicationConfiguration {
 
     private final Environment env;
+
+    @Bean
+    public Executor executor() {
+        return Executors.newFixedThreadPool(env.getRequiredProperty("executor.threads", int.class));
+    }
 
     @Bean
     public DataSource hikariDataSource() {
