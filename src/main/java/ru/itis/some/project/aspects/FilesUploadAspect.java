@@ -18,9 +18,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FilesUploadAspect {
 
-    private final AuthService authService;
-    private final EmailService emailService;
     private final TemplateService templateService;
+    private final EmailService emailService;
+    private final AuthService authService;
 
     @Value("${server.url}")
     private String serverURL;

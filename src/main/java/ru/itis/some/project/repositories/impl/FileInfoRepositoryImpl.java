@@ -16,21 +16,28 @@ import java.util.Optional;
 @Repository
 @AllArgsConstructor
 public class FileInfoRepositoryImpl implements FileInfoRepository {
+
     private static final String SQL_FIND_ID =
             "select * from file_info where id = ?";
+
     private static final String SQL_FIND_TOKEN =
             "select * from file_info where token = ?";
+
     private static final String SQL_FIND_ALL =
             "select * from file_info";
+
     private static final String SQL_FIND_BY_USER =
             "select * from file_info where user_id = ?";
+
     private static final String SQL_CREATE =
             "insert into file_info(token, length, mime_type, original_name, user_id) " +
             "values (?, ?, ?, ?, ?)";
+
     private static final String SQL_UPDATE =
             "update file_info " +
             "set token = ?, length = ?, mime_type = ?, original_name = ?, user_id = ? " +
             "where id = ?";
+
     private static final String SQL_DELETE =
             "delete from file_info where id = ?";
 

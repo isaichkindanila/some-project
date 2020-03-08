@@ -13,6 +13,7 @@ import java.util.Map;
 @Service
 @AllArgsConstructor
 public class TemplateServiceFreemarkerImpl implements TemplateService {
+
     private final Configuration config;
 
     @Override

@@ -8,8 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.itis.some.project.repositories.FileInputStreamRepository;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -29,8 +29,7 @@ public class FileInputStreamRepositoryLocalStorageImpl implements FileInputStrea
         var file = new File(storage, token);
 
         if (file.exists() && file.isFile()) {
-            var url = file.toURI().toURL();
-            return Optional.of(new URLStreamSupplier(url));
+            return Optional.of(new FileInputStreamSupplier(file));
         } else {
             return Optional.empty();
         }
@@ -42,8 +41,7 @@ public class FileInputStreamRepositoryLocalStorageImpl implements FileInputStrea
         var fileInStorage = new File(storage, token);
         file.transferTo(fileInStorage);
 
-        var url = fileInStorage.toURI().toURL();
-        return new URLStreamSupplier(url);
+        return new FileInputStreamSupplier(fileInStorage);
     }
 
     @Override
@@ -54,14 +52,14 @@ public class FileInputStreamRepositoryLocalStorageImpl implements FileInputStrea
     }
 
     @AllArgsConstructor
-    private static class URLStreamSupplier implements Supplier<InputStream> {
+    private static class FileInputStreamSupplier implements Supplier<InputStream> {
 
-        private final URL url;
+        private final File file;
 
         @Override
         @SneakyThrows
         public InputStream get() {
-            return url.openStream();
+            return new FileInputStream(file);
         }
     }
 }

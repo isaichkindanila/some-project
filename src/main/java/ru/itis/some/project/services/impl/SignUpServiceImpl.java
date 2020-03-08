@@ -16,8 +16,10 @@ import ru.itis.some.project.util.exceptions.ServiceException;
 @Component
 @RequiredArgsConstructor
 public class SignUpServiceImpl implements SignUpService {
-    private final UserRepository userRepository;
+
     private final SignUpTokenRepository tokenRepository;
+    private final UserRepository userRepository;
+
     private final TokenGeneratorService tokenGeneratorService;
     private final PasswordEncoder passwordEncoder;
 

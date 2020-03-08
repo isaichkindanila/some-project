@@ -19,6 +19,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class AuthAndUserDetailsServiceImpl implements AuthService, UserDetailsService {
+
     private final UserRepository userRepository;
 
     @Override

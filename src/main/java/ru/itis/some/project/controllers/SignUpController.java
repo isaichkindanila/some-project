@@ -15,6 +15,7 @@ import ru.itis.some.project.util.exceptions.ServiceException;
 @AllArgsConstructor
 @RequestMapping("/signUp")
 public class SignUpController {
+
     private final SignUpService signUpService;
     private final ConfirmSignUpService confirmSignUpService;
 

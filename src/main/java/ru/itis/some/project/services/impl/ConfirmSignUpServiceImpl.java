@@ -10,6 +10,7 @@ import ru.itis.some.project.util.exceptions.ServiceException;
 @Service
 @AllArgsConstructor
 public class ConfirmSignUpServiceImpl implements ConfirmSignUpService {
+
     private final UserRepository userRepository;
     private final SignUpTokenRepository tokenRepository;
 

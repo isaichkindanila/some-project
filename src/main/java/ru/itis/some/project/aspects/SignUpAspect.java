@@ -23,7 +23,7 @@ public class SignUpAspect {
     private String serverURL;
 
     @AfterReturning(
-            pointcut = "execution(String ru.itis.some.project.services.SignUpService.signUp(..)) && args(dto,..)",
+            pointcut = "execution(* ru.itis.some.project.services.SignUpService.signUp(..)) && args(dto,..)",
             returning = "token",
             argNames = "dto,token"
     )

@@ -18,6 +18,7 @@ import java.util.concurrent.Executor;
 @RequiredArgsConstructor
 @Log4j
 public class EmailServiceImpl implements EmailService {
+
     private final JavaMailSender mailSender;
     private final Executor executor;
 

@@ -32,7 +32,8 @@ public class ApplicationConfiguration {
 
     @Bean
     public Executor executor() {
-        return Executors.newFixedThreadPool(env.getRequiredProperty("executor.threads", int.class));
+        var threadCount = env.getRequiredProperty("executor.threads", int.class);
+        return Executors.newFixedThreadPool(threadCount);
     }
 
     @Bean
@@ -55,6 +56,20 @@ public class ApplicationConfiguration {
     @Bean
     public JdbcTemplate jdbcTemplate() {
         return new JdbcTemplate(hikariDataSource());
+    }
+
+    @Bean
+    public FreeMarkerConfigurer freemarkerViewConfigurer() {
+        var configurer = new FreeMarkerConfigurer();
+
+        configurer.setTemplateLoaderPath("classpath:templates");
+
+        return configurer;
+    }
+
+    @Bean
+    public ViewResolver freemarkerViewResolver() {
+        return new FreeMarkerViewResolver("/view/", ".ftl");
     }
 
     @Bean
@@ -84,19 +99,5 @@ public class ApplicationConfiguration {
 
 
         return sender;
-    }
-
-    @Bean
-    public ViewResolver freemarkerViewResolver() {
-        return new FreeMarkerViewResolver("/view/", ".ftl");
-    }
-
-    @Bean
-    public FreeMarkerConfigurer freemarkerViewConfigurer() {
-        var configurer = new FreeMarkerConfigurer();
-
-        configurer.setTemplateLoaderPath("classpath:templates");
-
-        return configurer;
     }
 }
