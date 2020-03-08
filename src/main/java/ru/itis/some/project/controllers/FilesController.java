@@ -41,7 +41,7 @@ public class FilesController {
         response.setContentType(fileDto.getMimeType());
         response.setHeader("Content-Disposition", "inline; filename=\"" + fileDto.getOriginalName() + "\"");
 
-        try(var in = fileDto.getUrl().openStream()) {
+        try(var in = fileDto.getInputStreamSupplier().get()) {
             var out = response.getOutputStream();
 
             in.transferTo(out);

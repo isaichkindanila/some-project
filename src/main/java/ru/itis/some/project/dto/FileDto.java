@@ -4,15 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.net.URL;
+import java.io.InputStream;
+import java.util.function.Supplier;
 
 @Data
 @Builder
 @AllArgsConstructor
 public class FileDto {
-    private final URL url;
     private final Long length;
     private final String token;
     private final String mimeType;
     private final String originalName;
+    private final Supplier<InputStream> inputStreamSupplier;
 }

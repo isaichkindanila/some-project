@@ -10,11 +10,12 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.itis.some.project.dto.FileDto;
 import ru.itis.some.project.models.FileInfo;
 import ru.itis.some.project.repositories.FileInfoRepository;
-import ru.itis.some.project.repositories.FileUrlRepository;
+import ru.itis.some.project.repositories.FileInputStreamRepository;
 import ru.itis.some.project.services.FileService;
 import ru.itis.some.project.services.TokenGeneratorService;
 
-import java.net.URL;
+import java.io.InputStream;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -22,14 +23,14 @@ public class FileServiceImpl implements FileService {
 
     private final TokenGeneratorService tokenGeneratorService;
     private final FileInfoRepository infoRepository;
-    private final FileUrlRepository urlRepository;
+    private final FileInputStreamRepository urlRepository;
 
     @Value("${tokens.files.length}")
     private int tokenLength;
 
-    private FileDto dtoFrom(URL url, FileInfo info) {
+    private FileDto dtoFrom(Supplier<InputStream> inputStreamSupplier, FileInfo info) {
         return FileDto.builder()
-                .url(url)
+                .inputStreamSupplier(inputStreamSupplier)
                 .length(info.getLength())
                 .token(info.getToken())
                 .mimeType(info.getMimeType())
@@ -41,7 +42,7 @@ public class FileServiceImpl implements FileService {
     @SneakyThrows
     public FileDto save(MultipartFile file) {
         var token = tokenGeneratorService.generateToken(tokenLength);
-        var url = urlRepository.create(token, file);
+        var inputStreamSupplier = urlRepository.create(token, file);
 
         var info = FileInfo.builder()
                 .token(token)
@@ -52,7 +53,7 @@ public class FileServiceImpl implements FileService {
 
         infoRepository.create(info);
 
-        return dtoFrom(url, info);
+        return dtoFrom(inputStreamSupplier, info);
     }
 
     @Override
