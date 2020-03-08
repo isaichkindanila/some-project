@@ -10,10 +10,11 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.itis.some.project.dto.FileDto;
 import ru.itis.some.project.models.FileInfo;
 import ru.itis.some.project.repositories.FileInfoRepository;
+import ru.itis.some.project.repositories.FileUrlRepository;
 import ru.itis.some.project.services.FileService;
 import ru.itis.some.project.services.TokenGeneratorService;
 
-import java.io.File;
+import java.net.URL;
 
 @Service
 @RequiredArgsConstructor
@@ -21,21 +22,14 @@ public class FileServiceImpl implements FileService {
 
     private final TokenGeneratorService tokenGeneratorService;
     private final FileInfoRepository infoRepository;
-
-    @Value("${storage.path}")
-    private String storagePath;
+    private final FileUrlRepository urlRepository;
 
     @Value("${tokens.files.length}")
     private int tokenLength;
 
-    private File getFileInStorage(String fileName) {
-        return new File(storagePath, fileName);
-    }
-
-    @SneakyThrows
-    private FileDto dtoFrom(File file, FileInfo info) {
+    private FileDto dtoFrom(URL url, FileInfo info) {
         return FileDto.builder()
-                .url(file.toURI().toURL())
+                .url(url)
                 .length(info.getLength())
                 .token(info.getToken())
                 .mimeType(info.getMimeType())
@@ -47,6 +41,8 @@ public class FileServiceImpl implements FileService {
     @SneakyThrows
     public FileDto save(MultipartFile file) {
         var token = tokenGeneratorService.generateToken(tokenLength);
+        var url = urlRepository.create(token, file);
+
         var info = FileInfo.builder()
                 .token(token)
                 .length(file.getSize())
@@ -56,27 +52,23 @@ public class FileServiceImpl implements FileService {
 
         infoRepository.create(info);
 
-        var storageFile = getFileInStorage(token);
-        file.transferTo(storageFile);
-
-        return dtoFrom(storageFile, info);
+        return dtoFrom(url, info);
     }
 
     @Override
     public FileDto load(String fileName) {
-        var optional = infoRepository.findByToken(fileName);
+        var optionalInfo = infoRepository.findByToken(fileName);
 
-        if (optional.isEmpty()) {
+        if (optionalInfo.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        var file = new File(storagePath, fileName);
-        var info = optional.get();
+        var optionalURL = urlRepository.find(fileName);
 
-        if (!file.exists()) {
-            throw new IllegalStateException("file exists in database but not on disk: " + fileName);
+        if (optionalURL.isEmpty()) {
+            throw new IllegalStateException("metadata of a file exists in database but it's not present in storage: '" + fileName + "'");
         }
 
-        return dtoFrom(file, info);
+        return dtoFrom(optionalURL.get(), optionalInfo.get());
     }
 }
