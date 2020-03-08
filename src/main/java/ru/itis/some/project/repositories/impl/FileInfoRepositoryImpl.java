@@ -23,10 +23,11 @@ public class FileInfoRepositoryImpl implements FileInfoRepository {
     private static final String SQL_FIND_ALL =
             "select * from file_info";
     private static final String SQL_CREATE =
-            "insert into file_info(token, length, mime_type, original_name) values (?, ?, ?, ?)";
+            "insert into file_info(token, length, mime_type, original_name, user_id) " +
+            "values (?, ?, ?, ?, ?)";
     private static final String SQL_UPDATE =
             "update file_info " +
-            "set token = ?, length = ?, mime_type = ?, original_name = ? " +
+            "set token = ?, length = ?, mime_type = ?, original_name = ?, user_id = ? " +
             "where id = ?";
     private static final String SQL_DELETE =
             "delete from file_info where id = ?";
@@ -35,6 +36,7 @@ public class FileInfoRepositoryImpl implements FileInfoRepository {
             FileInfo.builder()
                     .id(row.getLong("id"))
                     .length(row.getLong("length"))
+                    .userId(row.getLong("user_id"))
                     .mimeType(row.getString("mime_type"))
                     .originalName(row.getString("original_name"))
                     .token(row.getString("token"))
@@ -67,6 +69,7 @@ public class FileInfoRepositoryImpl implements FileInfoRepository {
         return template.query(SQL_FIND_ALL, mapper);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void create(FileInfo model) {
         var holder = new GeneratedKeyHolder();
@@ -78,6 +81,7 @@ public class FileInfoRepositoryImpl implements FileInfoRepository {
             statement.setLong(2, model.getLength());
             statement.setString(3, model.getMimeType());
             statement.setString(4, model.getOriginalName());
+            statement.setLong(5, model.getUserId());
 
             return statement;
         }, holder);
@@ -92,6 +96,7 @@ public class FileInfoRepositoryImpl implements FileInfoRepository {
                 model.getLength(),
                 model.getMimeType(),
                 model.getOriginalName(),
+                model.getUserId(),
                 model.getId());
     }
 

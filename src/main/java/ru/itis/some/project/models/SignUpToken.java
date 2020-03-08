@@ -9,6 +9,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class SignUpToken {
     private String token;
-    private User user;
+    private long userId;
     private boolean isUsed;
 }

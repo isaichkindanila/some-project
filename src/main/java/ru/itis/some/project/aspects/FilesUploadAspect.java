@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import ru.itis.some.project.dto.FileDto;
+import ru.itis.some.project.services.AuthService;
 import ru.itis.some.project.services.EmailService;
 import ru.itis.some.project.services.TemplateService;
 
@@ -18,6 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FilesUploadAspect {
 
+    private final AuthService authService;
     private final EmailService emailService;
     private final TemplateService templateService;
 
@@ -38,7 +39,7 @@ public class FilesUploadAspect {
         );
 
         var message = templateService.process("notify_upload", modelMap);
-        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var email = authService.getCurrentUser().getEmail();
 
         emailService.sendEmail(email, "File upload", message);
     }

@@ -41,7 +41,7 @@ public class SignUpServiceImpl implements SignUpService {
         var token = tokenGeneratorService.generateToken(tokenLength);
         var signUpToken = SignUpToken.builder()
                 .token(token)
-                .user(user)
+                .userId(user.getId())
                 .isUsed(false)
                 .build();
 

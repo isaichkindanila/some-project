@@ -8,8 +8,9 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class FileInfo {
-    private Long id;
-    private Long length;
+    private long id;
+    private long length;
+    private long userId;
     private String token;
     private String mimeType;
     private String originalName;

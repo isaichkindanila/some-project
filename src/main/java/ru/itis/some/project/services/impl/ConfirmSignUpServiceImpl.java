@@ -15,18 +15,18 @@ public class ConfirmSignUpServiceImpl implements ConfirmSignUpService {
 
     @Override
     public boolean confirm(String token) {
-        var optionalToken = tokenRepository.find(token);
-        if (optionalToken.isEmpty()) {
-            throw new ServiceException("token not found");
-        }
+        var signUpToken = tokenRepository.find(token).orElseThrow(
+                () -> new ServiceException("token not found")
+        );
 
-        var signUpToken = optionalToken.get();
         if (signUpToken.isUsed()) {
             // user has already confirmed email
             return false;
         }
 
-        var user = signUpToken.getUser();
+        var user = userRepository.find(signUpToken.getUserId()).orElseThrow(
+                () -> new IllegalStateException("user not found (id = " + signUpToken.getUserId() + ")")
+        );
 
         user.setActivated(true);
         signUpToken.setUsed(true);

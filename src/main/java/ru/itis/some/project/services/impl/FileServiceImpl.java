@@ -11,6 +11,7 @@ import ru.itis.some.project.dto.FileDto;
 import ru.itis.some.project.models.FileInfo;
 import ru.itis.some.project.repositories.FileInfoRepository;
 import ru.itis.some.project.repositories.FileInputStreamRepository;
+import ru.itis.some.project.services.AuthService;
 import ru.itis.some.project.services.FileService;
 import ru.itis.some.project.services.TokenGeneratorService;
 
@@ -22,8 +23,10 @@ import java.util.function.Supplier;
 public class FileServiceImpl implements FileService {
 
     private final TokenGeneratorService tokenGeneratorService;
-    private final FileInfoRepository infoRepository;
+    private final AuthService authService;
+
     private final FileInputStreamRepository urlRepository;
+    private final FileInfoRepository infoRepository;
 
     @Value("${tokens.files.length}")
     private int tokenLength;
@@ -42,14 +45,15 @@ public class FileServiceImpl implements FileService {
     @SneakyThrows
     public FileDto save(MultipartFile file) {
         var token = tokenGeneratorService.generateToken(tokenLength);
-        var inputStreamSupplier = urlRepository.create(token, file);
-
         var info = FileInfo.builder()
                 .token(token)
                 .length(file.getSize())
+                .userId(authService.getCurrentUser().getId())
                 .mimeType(file.getContentType())
                 .originalName(file.getOriginalFilename())
                 .build();
+
+        var inputStreamSupplier = urlRepository.create(token, file);
 
         infoRepository.create(info);
 
@@ -58,18 +62,18 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public FileDto load(String fileName) {
-        var optionalInfo = infoRepository.findByToken(fileName);
+        var info = infoRepository.findByToken(fileName).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
 
-        if (optionalInfo.isEmpty()) {
+        if (info.getUserId() != authService.getCurrentUser().getId()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        var optionalURL = urlRepository.find(fileName);
+        var inputStreamSupplier = urlRepository.find(fileName).orElseThrow(
+                () -> new IllegalStateException("metadata of a file exists in database but it's not present in storage: '" + fileName + "'")
+        );
 
-        if (optionalURL.isEmpty()) {
-            throw new IllegalStateException("metadata of a file exists in database but it's not present in storage: '" + fileName + "'");
-        }
-
-        return dtoFrom(optionalURL.get(), optionalInfo.get());
+        return dtoFrom(inputStreamSupplier, info);
     }
 }
