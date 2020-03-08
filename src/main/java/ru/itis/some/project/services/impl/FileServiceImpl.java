@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itis.some.project.dto.FileDto;
+import ru.itis.some.project.dto.FileInfoDto;
 import ru.itis.some.project.models.FileInfo;
 import ru.itis.some.project.repositories.FileInfoRepository;
 import ru.itis.some.project.repositories.FileInputStreamRepository;
@@ -16,6 +17,7 @@ import ru.itis.some.project.services.FileService;
 import ru.itis.some.project.services.TokenGeneratorService;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.function.Supplier;
 
 @Service
@@ -75,5 +77,13 @@ public class FileServiceImpl implements FileService {
         );
 
         return dtoFrom(inputStreamSupplier, info);
+    }
+
+    @Override
+    public List<FileInfoDto> findByCurrentUser() {
+        var user = authService.getCurrentUser();
+        var infoList = infoRepository.findByUserId(user.getId());
+
+        return FileInfoDto.from(infoList);
     }
 }

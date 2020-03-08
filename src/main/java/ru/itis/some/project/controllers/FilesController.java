@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 import ru.itis.some.project.services.FileService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -18,18 +19,18 @@ public class FilesController {
     private final FileService fileService;
 
     @GetMapping
-    public String getUploadPage() {
-        return "files";
+    public ModelAndView getUploadPage() {
+        return new ModelAndView("files", "files", fileService.findByCurrentUser());
     }
 
     @PostMapping
-    public String uploadFile(@RequestParam MultipartFile file) {
+    public ModelAndView uploadFile(@RequestParam MultipartFile file) {
         if (file.getOriginalFilename() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "original file name must be provided");
         }
 
         fileService.save(file);
-        return "files";
+        return getUploadPage();
     }
 
     @SneakyThrows

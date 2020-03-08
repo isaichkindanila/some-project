@@ -22,6 +22,8 @@ public class FileInfoRepositoryImpl implements FileInfoRepository {
             "select * from file_info where token = ?";
     private static final String SQL_FIND_ALL =
             "select * from file_info";
+    private static final String SQL_FIND_BY_USER =
+            "select * from file_info where user_id = ?";
     private static final String SQL_CREATE =
             "insert into file_info(token, length, mime_type, original_name, user_id) " +
             "values (?, ?, ?, ?, ?)";
@@ -67,6 +69,11 @@ public class FileInfoRepositoryImpl implements FileInfoRepository {
     @Override
     public List<FileInfo> findAll() {
         return template.query(SQL_FIND_ALL, mapper);
+    }
+
+    @Override
+    public List<FileInfo> findByUserId(Long id) {
+        return template.query(SQL_FIND_BY_USER, mapper, id);
     }
 
     @SuppressWarnings("ConstantConditions")
