@@ -3,6 +3,7 @@ package ru.itis.some.project.services.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,14 +12,12 @@ import ru.itis.some.project.dto.FileDto;
 import ru.itis.some.project.dto.FileInfoDto;
 import ru.itis.some.project.models.FileInfo;
 import ru.itis.some.project.repositories.FileInfoRepository;
-import ru.itis.some.project.repositories.FileInputStreamRepository;
+import ru.itis.some.project.repositories.FileResourceRepository;
 import ru.itis.some.project.services.AuthService;
 import ru.itis.some.project.services.FileService;
 import ru.itis.some.project.services.TokenGeneratorService;
 
-import java.io.InputStream;
 import java.util.List;
-import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -27,15 +26,15 @@ public class FileServiceImpl implements FileService {
     private final TokenGeneratorService tokenGeneratorService;
     private final AuthService authService;
 
-    private final FileInputStreamRepository urlRepository;
+    private final FileResourceRepository resourceRepository;
     private final FileInfoRepository infoRepository;
 
     @Value("${tokens.files.length}")
     private int tokenLength;
 
-    private FileDto dtoFrom(Supplier<InputStream> inputStreamSupplier, FileInfo info) {
+    private FileDto dtoFrom(Resource resource, FileInfo info) {
         return FileDto.builder()
-                .inputStreamSupplier(inputStreamSupplier)
+                .resource(resource)
                 .length(info.getLength())
                 .token(info.getToken())
                 .mimeType(info.getMimeType())
@@ -55,11 +54,11 @@ public class FileServiceImpl implements FileService {
                 .originalName(file.getOriginalFilename())
                 .build();
 
-        var inputStreamSupplier = urlRepository.create(token, file);
-
         infoRepository.create(info);
 
-        return dtoFrom(inputStreamSupplier, info);
+        var resource = resourceRepository.create(token, file);
+
+        return dtoFrom(resource, info);
     }
 
     @Override
@@ -72,11 +71,11 @@ public class FileServiceImpl implements FileService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        var inputStreamSupplier = urlRepository.find(fileName).orElseThrow(
+        var resource = resourceRepository.find(fileName).orElseThrow(
                 () -> new IllegalStateException("metadata of a file exists in database but it's not present in storage: '" + fileName + "'")
         );
 
-        return dtoFrom(inputStreamSupplier, info);
+        return dtoFrom(resource, info);
     }
 
     @Override

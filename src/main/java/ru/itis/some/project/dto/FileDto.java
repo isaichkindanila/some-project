@@ -3,9 +3,7 @@ package ru.itis.some.project.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.io.InputStream;
-import java.util.function.Supplier;
+import org.springframework.core.io.Resource;
 
 @Data
 @Builder
@@ -15,5 +13,5 @@ public class FileDto {
     private final String token;
     private final String mimeType;
     private final String originalName;
-    private final Supplier<InputStream> inputStreamSupplier;
+    private final Resource resource;
 }
