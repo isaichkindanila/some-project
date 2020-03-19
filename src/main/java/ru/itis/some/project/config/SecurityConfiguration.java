@@ -47,8 +47,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.rememberMe()
                 .alwaysRemember(true)
                 .tokenRepository(tokenRepository());
-
-        http.csrf().disable();
     }
 
     @Override

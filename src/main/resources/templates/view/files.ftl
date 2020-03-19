@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="_csrf" type="org.springframework.security.web.csrf.CsrfToken" -->
 <#-- @ftlvariable name="files" type="java.util.List<ru.itis.some.project.dto.FileInfoDto>" -->
 <#import "lib/html.ftl" as H>
 <@H.html>
@@ -5,6 +6,7 @@
     <@H.body>
         <form action="/files" method="post" enctype="multipart/form-data">
             <input type="file" name="file">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
             <input type="submit" value="Upload">
         </form>
         <hr>
